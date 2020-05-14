@@ -17,7 +17,7 @@ export default class BaseButton extends Vue {
   @Prop({ default: '' }) readonly className!: string;
   @Prop({ default: "" }) readonly buttonText!: string;
   @Prop({ default: "NORMAL" }) readonly status!: string;
-  @Prop({ default: false }) readonly isLoading: boolean;
+  @Prop({ default: false }) readonly isLoading!: boolean;
 
   public handleClick() {
     this.$emit("button-clicked");

@@ -9,6 +9,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 
 import { Platform } from "../../types";
 
+// @ts-ignore
 import houseIcon from '@/assets/map-home-icon.svg'
 
 @Component
@@ -60,10 +61,12 @@ export default class BaseMap extends Vue {
   }
 
   public onResize() {
+    // @ts-ignore
     this.map.getViewPort().resize()
   }
 
   public addMarkersAndSetViewBounds(map: object) {
+    // @ts-ignore
     const arrayOfHotels = []
     // create map objects
     // @ts-ignore: H is not defined
@@ -80,9 +83,12 @@ export default class BaseMap extends Vue {
 
     // @ts-ignore: H is not defined
     const group = new H.map.Group(); // eslint-disable-line no-undef
+      // @ts-ignore
     group.addObjects(arrayOfHotels);
+    // @ts-ignore
     this.map.addObject(group);
 
+    // @ts-ignore
     this.map.getViewModel().setLookAtData({
       bounds: group.getBoundingBox()
     });
