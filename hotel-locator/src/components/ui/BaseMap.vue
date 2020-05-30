@@ -76,7 +76,7 @@ export default class BaseMap extends Vue {
         const icon = new H.map.Icon(houseIcon); // eslint-disable-line no-undef
 
           // @ts-ignore: H is not defined
-          const location = new H.map.Marker({lat:hotelCoordinate.lat,  lng: hotelCoordinate.lng}, {icon}) // eslint-disable-line no-undef
+          const location = new H.map.DomMarker({lat:hotelCoordinate.lat,  lng: hotelCoordinate.lng}, {icon}) // eslint-disable-line no-undef
           arrayOfHotels.push(location)
     })
 
