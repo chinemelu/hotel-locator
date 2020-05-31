@@ -160,12 +160,6 @@ export default class BaseMap extends Vue {
   background-color: #fff;
   border-radius: 4px;
   margin: 0 auto;
-  /* position: absolute; */
-  /* left: 50%; */
-  /* transform: translateX(-50%);
-  bottom: 2%; */
-  /* margin-left: auto;
-  margin-right: auto; */
   max-width: 100%;
 }
 
