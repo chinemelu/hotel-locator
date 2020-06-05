@@ -9,7 +9,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 
 import hotelPlaceholder from '@/assets/hotel-placeholder.png';
 
-import { Platform } from "../../types";
+import { Platform, EventTargetObject} from '../../types';
 
 // @ts-ignore
 import houseIcon from '@/assets/map-home-icon.svg';
@@ -74,9 +74,7 @@ export default class BaseMap extends Vue {
     this.map.getViewPort().resize()
   }
 
-  public addUIBubble(evt) {
-        console.log('ADD UI BUBBLE THIS', this)
-
+  public addUIBubble(evt: Event) {
       // event target is the marker itself, group is a parent event target
       // for all objects that it contains
       // @ts-ignore: H is not defined
@@ -90,7 +88,6 @@ export default class BaseMap extends Vue {
   }
 
   public addMarkersAndSetViewBounds(map: object) {
-            console.log('ADD MARKERS SET VIEW BOUNDS THIS', this)
     // @ts-ignore
     const arrayOfHotels = []
     // create map objects
