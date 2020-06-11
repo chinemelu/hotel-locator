@@ -20,6 +20,6 @@ export interface EventTargetObject {
 
 export interface Target {
   value: string;
-  getData: Function;
-  getGeometry: Function;
+  getData: () => object;
+  getGeometry: () => object;
 }

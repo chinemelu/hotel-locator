@@ -74,7 +74,7 @@ export default class BaseMap extends Vue {
     this.map.getViewPort().resize()
   }
 
-  public addUIBubble(evt: Event) {
+  public addUIBubble(evt: EventTargetObject) {
       // event target is the marker itself, group is a parent event target
       // for all objects that it contains
       // @ts-ignore: H is not defined
@@ -122,7 +122,7 @@ export default class BaseMap extends Vue {
           marker.dispatchEvent('tap');
 
           arrayOfHotels.push(marker)
-    })
+    }) 
 
 
     // @ts-ignore: H is not defined
