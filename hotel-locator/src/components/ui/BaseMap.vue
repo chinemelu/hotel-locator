@@ -9,7 +9,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 
 import hotelPlaceholder from '@/assets/hotel-placeholder.png';
 
-import { Platform, EventTargetObject} from '../../types';
+import { Platform, HotelLocation} from '../../types';
 
 // @ts-ignore
 import houseIcon from '@/assets/map-home-icon.svg';
@@ -19,10 +19,10 @@ export default class BaseMap extends Vue {
   @Prop() readonly lat!: string;
   @Prop() readonly long!: string;
   @Prop() readonly className!: string;
-  @Prop() readonly hotelLocations!: any;
+  @Prop() readonly hotelLocations!: HotelLocation;
 
   // @ts-ignore
-  private apiKey ='-2hIw_SN-mA-eof073Z6YWUQRMQLnSdXhuJpmkgxRX4';
+  private apiKey =process.env.VUE_APP_API_KEY
   private map = {};
   private group = {};
   private ui = {};
@@ -46,7 +46,6 @@ export default class BaseMap extends Vue {
   }
 
   public mounted(): void {
-    console.log('wooooo', this.apiKey)
     const defaultLayers = this.platform.createDefaultLayers();
     
     // @ts-ignore: H is not defined
@@ -74,7 +73,7 @@ export default class BaseMap extends Vue {
     this.map.getViewPort().resize()
   }
 
-  public addUIBubble(evt: EventTargetObject) {
+  public addUIBubble(evt: any) {
       // event target is the marker itself, group is a parent event target
       // for all objects that it contains
       // @ts-ignore: H is not defined
