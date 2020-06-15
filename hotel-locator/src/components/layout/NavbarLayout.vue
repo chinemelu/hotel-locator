@@ -1,25 +1,21 @@
 <template>
-    <div>
-        <the-navbar/>
-        <slot></slot>
-    </div>
+  <div>
+    <the-navbar />
+    <slot></slot>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-import TheNavbar from '@/components/layout/TheNavbar.vue';
+import TheNavbar from "@/components/layout/TheNavbar.vue";
 
 @Component({
-    components: {
-        TheNavbar
-    }
+  components: {
+    TheNavbar
+  }
 })
-export default class NavbarLayout extends Vue {
-    
-}
+export default class NavbarLayout extends Vue {}
 </script>
 
-<style>
-
-</style>
+<style></style>

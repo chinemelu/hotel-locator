@@ -15,18 +15,18 @@ export interface MapObject {
 }
 
 export interface Address {
-  label: string
-  countryCode: string
-  countryName: string
-  city: string
-  postalCode: string
-  state: string
+  label: string;
+  countryCode: string;
+  countryName: string;
+  city: string;
+  postalCode: string;
+  state: string;
 }
 export interface MapView {
-  west: number, 
-  south: number, 
-  east: number, 
-  north: number
+  west: number;
+  south: number;
+  east: number;
+  north: number;
 }
 export interface Position {
   lat: number;
@@ -37,15 +37,15 @@ export interface Scoring {
   fieldScore: FieldScore;
 }
 export interface FieldScore {
-  city: number
+  city: number;
 }
 export interface HotelLocation {
-  address: Address
-  id: string
-  localityType: string
-  mapView: MapView
-  position: Position
-  resultType: string
-  scoring: Scoring
-  title: string
+  address: Address;
+  id: string;
+  localityType: string;
+  mapView: MapView;
+  position: Position;
+  resultType: string;
+  scoring: Scoring;
+  title: string;
 }
