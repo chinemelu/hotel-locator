@@ -33,5 +33,5 @@ export default class Navbar extends Vue {}
   justify-content: space-between;
   align-items: center;
   background-color: #ebeae6;
-} 
+}
 </style>

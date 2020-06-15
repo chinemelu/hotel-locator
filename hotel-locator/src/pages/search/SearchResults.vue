@@ -1,8 +1,8 @@
 <template>
   <div class="map-section">
-    <base-map 
-      :lat="coordinates.lat" 
-      :long="coordinates.lng" 
+    <base-map
+      :lat="coordinates.lat"
+      :long="coordinates.lng"
       className="search-map"
       :hotelLocations="hotelLocations"
     />
@@ -20,8 +20,8 @@ import BaseMap from "@/components/ui/BaseMap.vue";
   }
 })
 export default class Search extends Vue {
-    @Prop() readonly coordinates!: object
-    @Prop() readonly hotelLocations!: object
+  @Prop() readonly coordinates!: object;
+  @Prop() readonly hotelLocations!: object;
 }
 </script>
 
