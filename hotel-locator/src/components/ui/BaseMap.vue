@@ -1,5 +1,5 @@
 <template>
-  <div class="map">
+  <div class="map" id="map">
     <div ref="map" :class="className"></div>
   </div>
 </template>
@@ -16,16 +16,12 @@ import houseIcon from "@/assets/map-home-icon.svg";
 
 @Component
 export default class BaseMap extends Vue {
-  @Prop() readonly lat!: string;
-  @Prop() readonly long!: string;
-  @Prop() readonly className!: string;
-  @Prop() readonly hotelLocations!: HotelLocation;
-
-  // @ts-ignore
+    // @ts-ignore
   private apiKey = process.env.VUE_APP_API_KEY;
   private map = {};
   private group = {};
   private ui = {};
+  private icon = '';
 
   private platform: Platform = {
     createDefaultLayers: () => ({
@@ -36,6 +32,11 @@ export default class BaseMap extends Vue {
       }
     })
   };
+
+  @Prop() readonly lat!: string;
+  @Prop() readonly long!: string;
+  @Prop() readonly className!: string;
+  @Prop() readonly hotelLocations!: HotelLocation;
 
   public created(): void {
     // @ts-ignore: H is not defined
@@ -73,20 +74,6 @@ export default class BaseMap extends Vue {
   public onResize() {
     // @ts-ignore
     this.map.getViewPort().resize();
-  }
-
-  /*eslint-disable @typescript-eslint/no-explicit-any*/
-  public addUIBubble(evt: any) {
-    // event target is the marker itself, group is a parent event target
-    // for all objects that it contains
-    // @ts-ignore: H is not defined
-    const bubble = new H.ui.InfoBubble(evt.target.getGeometry(), { // eslint-disable-line no-undef
-      // read custom data
-      content: evt.target.getData()
-    });
-    // show info bubble
-    // @ts-ignore: H is not defined
-    this.ui.addBubble(bubble); // eslint-disable-line no-undef
   }
 
   public addMarkersAndSetViewBounds() {
@@ -127,10 +114,10 @@ export default class BaseMap extends Vue {
                 </div>
                 <button class="book-hotel-btn">Book</button>
             </div>`);
-      marker.dispatchEvent("tap");
-
-      arrayOfHotels.push(marker);
+          marker.dispatchEvent("tap");
+          arrayOfHotels.push(marker);
     });
+
 
     // @ts-ignore: H is not defined
     const group = new H.map.Group(); // eslint-disable-line no-undef
@@ -139,7 +126,7 @@ export default class BaseMap extends Vue {
     // @ts-ignore
     this.map.addObject(group);
 
-    group.addEventListener("tap", this.addUIBubble, false);
+    group.addEventListener("tap", this.addInfoBubble, false);
 
     // @ts-ignore
     this.map.getViewModel().setLookAtData({
@@ -147,9 +134,22 @@ export default class BaseMap extends Vue {
     });
   }
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+  public addInfoBubble(evt: any) {
+    // @ts-ignore: H is not defined
+    const bubble = new H.ui.InfoBubble(evt.target.getGeometry(), { // eslint-disable-line no-undef
+      // read custom data
+      content: evt.target.getData()
+    });
+    // @ts-ignore: H is not defined
+    this.ui.getBubbles().forEach(bubble => this.ui.removeBubble(bubble))
+    // @ts-ignore: H is not defined
+    this.ui.addBubble(bubble); // eslint-disable-line no-undef
+  }
+
   public beforeDestroy() {
     window.removeEventListener("resize", this.onResize);
-    window.removeEventListener("tap", this.addUIBubble);
+    window.removeEventListener("tap", this.addInfoBubble); // eslint-disable-line no-undef
   }
 }
 </script>
@@ -201,10 +201,19 @@ export default class BaseMap extends Vue {
   color: #b3b7bb;
 }
 
+.hotel-image-wrapper {
+  width: 18rem;
+  height: 12rem;
+}
+
 .selected-hotel-image {
-  width: 10rem;
-  height: 20rem;
   object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+.H_ib_tail {
+  visibility: hidden;
 }
 
 .book-hotel-btn {
