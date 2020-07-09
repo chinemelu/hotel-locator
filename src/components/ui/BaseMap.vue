@@ -9,19 +9,30 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 
 import hotelPlaceholder from "@/assets/hotel-placeholder.png";
 
-import { Platform, HotelLocation } from "../../types";
+import {
+  Platform,
+  HotelLocation,
+  ensurePossiblyNullValueReturnsObject
+} from "@/types";
 
-// @ts-ignore
-import houseIcon from "@/assets/map-home-icon.svg";
+import greyHomeIcon from "@/assets/grey-home-icon.svg";
+import blackHomeIcon from "@/assets/black-home-icon.svg";
+
+/* eslint-disable no-undef */
 
 @Component
 export default class BaseMap extends Vue {
-    // @ts-ignore
+  // @ts-ignore
   private apiKey = process.env.VUE_APP_API_KEY;
+  // private group = {};
   private map = {};
-  private group = {};
   private ui = {};
-  private icon = '';
+  private icon = "";
+  private activeMarker: any = {};
+  // @ts-ignore: H is not defined
+  private blackHomeIconInstance = new H.map.Icon(blackHomeIcon);
+  // @ts-ignore: H is not defined
+  private greyHomeIconInstance = new H.map.Icon(greyHomeIcon);
 
   private platform: Platform = {
     createDefaultLayers: () => ({
@@ -40,7 +51,7 @@ export default class BaseMap extends Vue {
 
   public created(): void {
     // @ts-ignore: H is not defined
-    this.platform = new H.service.Platform({ // eslint-disable-line no-undef
+    this.platform = new H.service.Platform({
       apikey: this.apiKey
     });
   }
@@ -49,7 +60,7 @@ export default class BaseMap extends Vue {
     const defaultLayers = this.platform.createDefaultLayers();
 
     // @ts-ignore: H is not defined
-    this.map = new H.Map(this.$refs.map, defaultLayers.vector.normal.map, { // eslint-disable-line no-undef
+    this.map = new H.Map(this.$refs.map, defaultLayers.vector.normal.map, {
       zoom: 10,
       center: {
         lat: this.lat,
@@ -60,16 +71,29 @@ export default class BaseMap extends Vue {
     window.addEventListener("resize", this.onResize);
 
     // @ts-ignore: H is not defined
-    new H.mapevents.Behavior( // eslint-disable-line no-undef
+    new H.mapevents.Behavior(
       // @ts-ignore: H is not defined
-      new H.mapevents.MapEvents(this.map) // eslint-disable-line no-undef
+      new H.mapevents.MapEvents(this.map)
     );
 
     // @ts-ignore: H is not defined
-    this.ui = H.ui.UI.createDefault(this.map, defaultLayers); // eslint-disable-line no-undef
+    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
 
     this.addMarkersAndSetViewBounds();
   }
+
+  public evt!: {
+    target: {
+      getData(): string;
+      setIcon(): string;
+    };
+  };
+
+  public group!: {
+    addEventListener: EventTarget;
+    getBoundingBox: () => {};
+    removeEventListener: EventTarget;
+  };
 
   public onResize() {
     // @ts-ignore
@@ -84,12 +108,13 @@ export default class BaseMap extends Vue {
     this.hotelLocations.forEach(hotel => {
       const hotelCoordinate = hotel.position;
       // @ts-ignore: H is not defined
-      const icon = new H.map.Icon(houseIcon); // eslint-disable-line no-undef
+
+      this.icon = new H.map.Icon(greyHomeIcon);
 
       // @ts-ignore: H is not defined
-      const marker = new H.map.Marker( // eslint-disable-line no-undef
+      const marker = new H.map.Marker(
         { lat: hotelCoordinate.lat, lng: hotelCoordinate.lng },
-        { icon }
+        { icon: this.icon }
       );
       marker.setData(`
             <div class="hotel-card-wrapper">
@@ -114,42 +139,64 @@ export default class BaseMap extends Vue {
                 </div>
                 <button class="book-hotel-btn">Book</button>
             </div>`);
-          marker.dispatchEvent("tap");
-          arrayOfHotels.push(marker);
+      marker.dispatchEvent("tap");
+      arrayOfHotels.push(marker);
     });
 
-
     // @ts-ignore: H is not defined
-    const group = new H.map.Group(); // eslint-disable-line no-undef
+    this.group = new H.map.Group();
     // @ts-ignore
-    group.addObjects(arrayOfHotels);
+    this.group.addObjects(arrayOfHotels);
     // @ts-ignore
-    this.map.addObject(group);
+    this.map.addObject(this.group);
 
-    group.addEventListener("tap", this.addInfoBubble, false);
+    this.group.addEventListener("tap", this.addInfoBubble);
 
     // @ts-ignore
     this.map.getViewModel().setLookAtData({
-      bounds: group.getBoundingBox()
+      bounds: this.group.getBoundingBox()
     });
   }
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-  public addInfoBubble(evt: any) {
+  public resetPreviousIconToDefaultGreyIcon() {
+    if (Object.keys(this.activeMarker).length > 0) {
+      this.activeMarker.setIcon(this.greyHomeIconInstance);
+    }
+  }
+
+  public setSelectedIcon(evt: CustomEvent) {
+    ensurePossiblyNullValueReturnsObject(evt.target).setIcon(
+      this.blackHomeIconInstance
+    );
+  }
+
+  public setActiveMarker(evt: CustomEvent) {
+    this.activeMarker = ensurePossiblyNullValueReturnsObject(evt.target);
+  }
+
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  public addInfoBubble(evt: CustomEvent) {
+    this.resetPreviousIconToDefaultGreyIcon();
+    this.setSelectedIcon(evt);
     // @ts-ignore: H is not defined
-    const bubble = new H.ui.InfoBubble(evt.target.getGeometry(), { // eslint-disable-line no-undef
+    const bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
       // read custom data
-      content: evt.target.getData()
+      content: ensurePossiblyNullValueReturnsObject(evt.target).getData()
     });
+    this.clearOpenInformationBubble();
     // @ts-ignore: H is not defined
-    this.ui.getBubbles().forEach(bubble => this.ui.removeBubble(bubble))
+    this.ui.addBubble(bubble);
+    this.setActiveMarker(evt);
+  }
+
+  public clearOpenInformationBubble() {
     // @ts-ignore: H is not defined
-    this.ui.addBubble(bubble); // eslint-disable-line no-undef
+    this.ui.getBubbles().forEach(bubble => this.ui.removeBubble(bubble));
   }
 
   public beforeDestroy() {
     window.removeEventListener("resize", this.onResize);
-    window.removeEventListener("tap", this.addInfoBubble); // eslint-disable-line no-undef
+    window.removeEventListener("tap", this.addInfoBubble);
   }
 }
 </script>

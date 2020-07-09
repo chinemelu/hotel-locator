@@ -49,3 +49,10 @@ export interface HotelLocation {
   scoring: Scoring;
   title: string;
 }
+
+export const ensurePossiblyNullValueReturnsObject = <T>(argument: T | undefined | null): any => {
+  if (argument === undefined || argument === null) {
+      return {};
+  }
+  return argument;
+};
