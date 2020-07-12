@@ -19,6 +19,7 @@ import greyHomeIcon from "@/assets/grey-home-icon.svg";
 import blackHomeIcon from "@/assets/black-home-icon.svg";
 
 /* eslint-disable no-undef */
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 
 @Component
 export default class BaseMap extends Vue {
@@ -27,6 +28,12 @@ export default class BaseMap extends Vue {
   // private group = {};
   private map = {};
   private ui = {};
+  private group: EventTarget | any = {
+    addEventListener: () => undefined,
+    dispatchEvent: () => false,
+    removeEventListener: () => undefined,
+    getBoundingBox: () => ""
+  };
   private icon = "";
   private activeMarker: any = {};
   // @ts-ignore: H is not defined
@@ -47,7 +54,7 @@ export default class BaseMap extends Vue {
   @Prop() readonly lat!: string;
   @Prop() readonly long!: string;
   @Prop() readonly className!: string;
-  @Prop() readonly hotelLocations!: HotelLocation;
+  @Prop() readonly hotelLocations!: Array<HotelLocation>;
 
   public created(): void {
     // @ts-ignore: H is not defined
@@ -89,12 +96,6 @@ export default class BaseMap extends Vue {
     };
   };
 
-  public group!: {
-    addEventListener: EventTarget;
-    getBoundingBox: () => {};
-    removeEventListener: EventTarget;
-  };
-
   public onResize() {
     // @ts-ignore
     this.map.getViewPort().resize();
@@ -104,7 +105,6 @@ export default class BaseMap extends Vue {
     // @ts-ignore
     const arrayOfHotels = [];
     // create map objects
-    // @ts-ignore: H is not defined
     this.hotelLocations.forEach(hotel => {
       const hotelCoordinate = hotel.position;
       // @ts-ignore: H is not defined
@@ -164,18 +164,18 @@ export default class BaseMap extends Vue {
     }
   }
 
-  public setSelectedIcon(evt: CustomEvent) {
+  public setSelectedIcon(evt: Event) {
     ensurePossiblyNullValueReturnsObject(evt.target).setIcon(
       this.blackHomeIconInstance
     );
   }
 
-  public setActiveMarker(evt: CustomEvent) {
+  public setActiveMarker(evt: Event) {
     this.activeMarker = ensurePossiblyNullValueReturnsObject(evt.target);
   }
 
   /* eslint-disable  @typescript-eslint/no-explicit-any */
-  public addInfoBubble(evt: CustomEvent) {
+  public addInfoBubble(evt: Event) {
     this.resetPreviousIconToDefaultGreyIcon();
     this.setSelectedIcon(evt);
     // @ts-ignore: H is not defined

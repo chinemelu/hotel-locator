@@ -35,6 +35,7 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
   private isLoading = false;
 
   private hotelLocations: HotelLocation = {
+    distance: 0,
     address: {
       label: "",
       countryCode: "",
