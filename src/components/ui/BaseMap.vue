@@ -63,6 +63,10 @@ export default class BaseMap extends Vue {
     });
   }
 
+  public isCustomEvent(event: Event): event is CustomEvent {
+    return "detail" in event;
+  }
+
   public mounted(): void {
     const defaultLayers = this.platform.createDefaultLayers();
 
