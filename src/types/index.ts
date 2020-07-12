@@ -1,3 +1,5 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 export interface Platform {
   createDefaultLayers(): VectorObject;
 }
@@ -48,4 +50,15 @@ export interface HotelLocation {
   resultType: string;
   scoring: Scoring;
   title: string;
+  image?: string;
+  distance: number;
 }
+
+export const ensurePossiblyNullValueReturnsObject = <T>(
+  argument: T | undefined | null
+): any => {
+  if (argument === undefined || argument === null) {
+    return {};
+  }
+  return argument;
+};
