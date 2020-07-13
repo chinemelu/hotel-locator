@@ -81,10 +81,10 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
       if (hotelCoordsResponse.status === 200) {
         // @ts-ignore
         const hotelLocationResponse = await axiosCalls.get(
-          `https://discover.search.hereapi.com/v1/discover?at=${this.coords.lat},${this.coords.lng}&q=hotels&apiKey=${process.env.VUE_APP_API_KEY}`
+          `https://places.sit.ls.hereapi.com/places/v1/discover/explore?at=${this.coords.lat},${this.coords.lng}&cat=hotel&apiKey=${process.env.VUE_APP_API_KEY}`
         );
         if (hotelLocationResponse.status === 200) {
-          this.hotelLocations = hotelLocationResponse.data.items;
+          this.hotelLocations = hotelLocationResponse.data.results.items;
           this.isLoading = false;
           this.handleNextSection();
         }

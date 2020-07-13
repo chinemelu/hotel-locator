@@ -117,7 +117,7 @@ export default class BaseMap extends Vue {
 
       // @ts-ignore: H is not defined
       const marker = new H.map.Marker(
-        { lat: hotelCoordinate.lat, lng: hotelCoordinate.lng },
+        { lat: hotelCoordinate[0], lng: hotelCoordinate[1] },
         { icon: this.icon }
       );
       marker.setData(`
@@ -130,7 +130,7 @@ export default class BaseMap extends Vue {
                   </div>
                   <div class="hotel-info-section">
                     <div class="hotel-info-name-distance">
-                      <h3 class="hotel-name">${hotel.address.label}</h3>
+                      <h4 class="hotel-name">${hotel.title}, ${hotel.vicinity}</h4>
                       <p class="hotel-distance">${
                         hotel.distance
                       } km from location</p>
