@@ -30,7 +30,7 @@ export interface MapView {
   east: number;
   north: number;
 }
-export interface Position {
+export interface Coordinates {
   lat: number;
   lng: number;
 }
@@ -46,12 +46,13 @@ export interface HotelLocation {
   id: string;
   localityType: string;
   mapView: MapView;
-  position: Position;
+  position: Array<number>;
   resultType: string;
   scoring: Scoring;
   title: string;
-  image?: string;
+  href: string;
   distance: number;
+  vicinity: string;
 }
 
 export const ensurePossiblyNullValueReturnsObject = <T>(

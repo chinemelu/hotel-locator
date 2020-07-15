@@ -36,7 +36,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx", "import-svg.d.ts", "import-png.d.ts"
   ],
   "exclude": [
     "node_modules"
