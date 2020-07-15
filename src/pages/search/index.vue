@@ -17,7 +17,7 @@ import Search from "@/pages/search/Search.vue";
 import SearchResults from "@/pages/search/SearchResults.vue";
 import NavbarLayout from "@/components/layout/NavbarLayout.vue";
 
-import { HotelLocation, Position } from "../../types";
+import { HotelLocation, Coordinates } from "../../types";
 
 import DynamicComponentMixin from "../../mixins/dynamicComponents";
 
@@ -52,10 +52,6 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
       east: 0,
       north: 0
     },
-    position: {
-      lng: 0,
-      lat: 0
-    },
     resultType: "",
     scoring: {
       queryScore: 0,
@@ -63,10 +59,13 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
         city: 0
       }
     },
-    title: ""
+    title: "",
+    vicinity: "",
+    href: '',
+    position: []
   };
 
-  private coords: Position = {
+  private coords: Coordinates = {
     lng: 0,
     lat: 0
   };
@@ -81,10 +80,10 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
       if (hotelCoordsResponse.status === 200) {
         // @ts-ignore
         const hotelLocationResponse = await axiosCalls.get(
-          `https://discover.search.hereapi.com/v1/discover?at=${this.coords.lat},${this.coords.lng}&q=hotels&apiKey=${process.env.VUE_APP_API_KEY}`
+          `https://places.sit.ls.hereapi.com/places/v1/discover/explore?at=${this.coords.lat},${this.coords.lng}&cat=hotel&apiKey=${process.env.VUE_APP_API_KEY}`
         );
         if (hotelLocationResponse.status === 200) {
-          this.hotelLocations = hotelLocationResponse.data.items;
+          this.hotelLocations = hotelLocationResponse.data.results.items;
           this.isLoading = false;
           this.handleNextSection();
         }

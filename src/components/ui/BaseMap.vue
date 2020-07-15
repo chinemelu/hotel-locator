@@ -1,6 +1,10 @@
 <template>
   <div class="map" id="map">
     <div ref="map" :class="className"></div>
+    <a target="_blank" href="https://icons8.com/icons/set/3-star-hotel"
+      >Hotel Star icon</a
+    >
+    icon by <a target="_blank" href="https://icons8.com">Icons8</a>
   </div>
 </template>
 
@@ -8,6 +12,8 @@
 import { Vue, Component, Prop } from "vue-property-decorator";
 
 import hotelPlaceholder from "@/assets/hotel-placeholder.png";
+
+import axiosCalls from "../../services/AxiosCalls";
 
 import {
   Platform,
@@ -17,6 +23,7 @@ import {
 
 import greyHomeIcon from "@/assets/grey-home-icon.svg";
 import blackHomeIcon from "@/assets/black-home-icon.svg";
+import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png";
 
 /* eslint-disable no-undef */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -67,7 +74,7 @@ export default class BaseMap extends Vue {
     return "detail" in event;
   }
 
-  public mounted(): void {
+  public async mounted() {
     const defaultLayers = this.platform.createDefaultLayers();
 
     // @ts-ignore: H is not defined
@@ -90,7 +97,7 @@ export default class BaseMap extends Vue {
     // @ts-ignore: H is not defined
     this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
 
-    this.addMarkersAndSetViewBounds();
+    await this.addMarkersAndSetViewBounds();
   }
 
   public evt!: {
@@ -105,32 +112,56 @@ export default class BaseMap extends Vue {
     this.map.getViewPort().resize();
   }
 
-  public addMarkersAndSetViewBounds() {
+  public replaceBreakHTMLTagsWithEmptySpace(str: string) {
+    const regex = /(&nbsp;|<([^>]+)>)/gi;
+    return str.replace(regex, " ");
+  }
+
+  public async addMarkersAndSetViewBounds() {
     // @ts-ignore
     const arrayOfHotels = [];
     // create map objects
-    this.hotelLocations.forEach(hotel => {
-      const hotelCoordinate = hotel.position;
-      // @ts-ignore: H is not defined
+    await Promise.all(
+      this.hotelLocations.map(async hotel => {
+        const additionalHotelDetailsResponse = await axiosCalls.get(hotel.href);
 
-      this.icon = new H.map.Icon(greyHomeIcon);
+        const hotelCoordinate = hotel.position;
+        const numberOfHotelImagesAvailable =
+          additionalHotelDetailsResponse.data.media.images.available;
 
-      // @ts-ignore: H is not defined
-      const marker = new H.map.Marker(
-        { lat: hotelCoordinate.lat, lng: hotelCoordinate.lng },
-        { icon: this.icon }
-      );
-      marker.setData(`
+        const hotelImageArray =
+          additionalHotelDetailsResponse.data.media.images.items;
+
+        const selectedIcon =
+          numberOfHotelImagesAvailable > 0
+            ? iconForHotelWithAtLeastOneImage
+            : greyHomeIcon;
+
+        // @ts-ignore: H is not defined
+        this.icon = new H.map.Icon(selectedIcon);
+
+        // @ts-ignore: H is not defined
+        const marker = new H.map.Marker(
+          { lat: hotelCoordinate[0], lng: hotelCoordinate[1] },
+          { icon: this.icon }
+        );
+        marker.setData(`
             <div class="hotel-card-wrapper">
                 <div class="hotel-card">
                   <div class="hotel-image-wrapper">
                     <img src="${
-                      hotel.image ? hotel.image : hotelPlaceholder
+                      numberOfHotelImagesAvailable > 0
+                        ? hotelImageArray[0].src
+                        : hotelPlaceholder
                     }" class="selected-hotel-image" alt="Image of selected hotel">
                   </div>
                   <div class="hotel-info-section">
                     <div class="hotel-info-name-distance">
-                      <h3 class="hotel-name">${hotel.address.label}</h3>
+                      <h4 class="hotel-name">${
+                        hotel.title
+                      }, ${this.replaceBreakHTMLTagsWithEmptySpace(
+          hotel.vicinity
+        )}</h4>
                       <p class="hotel-distance">${
                         hotel.distance
                       } km from location</p>
@@ -143,10 +174,10 @@ export default class BaseMap extends Vue {
                 </div>
                 <button class="book-hotel-btn">Book</button>
             </div>`);
-      marker.dispatchEvent("tap");
-      arrayOfHotels.push(marker);
-    });
-
+        marker.dispatchEvent("tap");
+        arrayOfHotels.push(marker);
+      })
+    );
     // @ts-ignore: H is not defined
     this.group = new H.map.Group();
     // @ts-ignore
