@@ -4,13 +4,7 @@
     <a target="_blank" href="https://icons8.com/icons/set/3-star-hotel"
       >Hotel Star icon</a
     >
-    icon by <a target="_blank" href="https://icons8.com">Icons8</a> Icons made
-    by
-    <a href="https://www.flaticon.com/authors/turkkub" title="turkkub"
-      >turkkub</a
-    >
-    from
-    <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+    icon by <a target="_blank" href="https://icons8.com">Icons8</a>
   </div>
 </template>
 
@@ -194,7 +188,6 @@ export default class BaseMap extends Vue {
         arrayOfHotels.push(marker);
       })
     );
-    arrayOfHotels.push(locationMarker);
     // @ts-ignore: H is not defined
     this.group = new H.map.Group();
     // @ts-ignore
