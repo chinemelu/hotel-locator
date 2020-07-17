@@ -4,13 +4,7 @@
     <a target="_blank" href="https://icons8.com/icons/set/3-star-hotel"
       >Hotel Star icon</a
     >
-    icon by <a target="_blank" href="https://icons8.com">Icons8</a> Icons made
-    by
-    <a href="https://www.flaticon.com/authors/turkkub" title="turkkub"
-      >turkkub</a
-    >
-    from
-    <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+    icon by <a target="_blank" href="https://icons8.com">Icons8</a>
   </div>
 </template>
 
@@ -29,7 +23,6 @@ import {
 
 import greyHomeIcon from "@/assets/grey-home-icon.svg";
 import blackHomeIcon from "@/assets/black-home-icon.svg";
-import locationMarker from "@/assets/location-marker.svg";
 import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png";
 
 /* eslint-disable no-undef */
@@ -52,8 +45,6 @@ export default class BaseMap extends Vue {
   private activeMarker: any = {};
   // @ts-ignore: H is not defined
   private blackHomeIconInstance = new H.map.Icon(blackHomeIcon);
-  // @ts-ignore: H is not defined
-  private locationMarkerInstance = new H.map.Icon(locationMarker);
   // @ts-ignore: H is not defined
   private greyHomeIconInstance = new H.map.Icon(greyHomeIcon);
 
@@ -129,11 +120,6 @@ export default class BaseMap extends Vue {
   public async addMarkersAndSetViewBounds() {
     // @ts-ignore
     const arrayOfHotels = [];
-    // @ts-ignore: H is not defined
-    const locationMarker = new H.map.Marker(
-      { lat: this.lat, lng: this.long },
-      { icon: this.icon }
-    );
     // create map objects
     await Promise.all(
       this.hotelLocations.map(async hotel => {
@@ -192,7 +178,6 @@ export default class BaseMap extends Vue {
         arrayOfHotels.push(marker);
       })
     );
-    arrayOfHotels.push(locationMarker);
     // @ts-ignore: H is not defined
     this.group = new H.map.Group();
     // @ts-ignore
