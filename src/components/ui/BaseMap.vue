@@ -4,7 +4,13 @@
     <a target="_blank" href="https://icons8.com/icons/set/3-star-hotel"
       >Hotel Star icon</a
     >
-    icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+    icon by <a target="_blank" href="https://icons8.com">Icons8</a> Icons made
+    by
+    <a href="https://www.flaticon.com/authors/turkkub" title="turkkub"
+      >turkkub</a
+    >
+    from
+    <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
   </div>
 </template>
 
@@ -23,6 +29,7 @@ import {
 
 import greyHomeIcon from "@/assets/grey-home-icon.svg";
 import blackHomeIcon from "@/assets/black-home-icon.svg";
+import locationIcon from "@/assets/location-marker.png";
 import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png";
 
 /* eslint-disable no-undef */
@@ -30,10 +37,11 @@ import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png"
 
 @Component
 export default class BaseMap extends Vue {
-  // @ts-ignore
   private apiKey = process.env.VUE_APP_API_KEY;
-  // private group = {};
-  private map = {};
+  private map = {
+    addObject: (arg: object) => ({ arg }),
+    addObjects: (arg: []) => ({ arg })
+  };
   private ui = {};
   private group: EventTarget | any = {
     addEventListener: () => undefined,
@@ -45,6 +53,8 @@ export default class BaseMap extends Vue {
   private activeMarker: any = {};
   // @ts-ignore: H is not defined
   private blackHomeIconInstance = new H.map.Icon(blackHomeIcon);
+  // @ts-ignore: H is not defined
+  private locationIconInstance = new H.map.Icon(locationIcon);
   // @ts-ignore: H is not defined
   private greyHomeIconInstance = new H.map.Icon(greyHomeIcon);
 
@@ -120,6 +130,13 @@ export default class BaseMap extends Vue {
   public async addMarkersAndSetViewBounds() {
     // @ts-ignore
     const arrayOfHotels = [];
+    // @ts-ignore: H is not defined
+
+    // @ts-ignore: H is not defined
+    const locationMarker = new H.map.Marker(
+      { lat: this.lat, lng: this.long },
+      { icon: this.locationIconInstance }
+    );
     // create map objects
     await Promise.all(
       this.hotelLocations.map(async hotel => {
@@ -182,8 +199,10 @@ export default class BaseMap extends Vue {
     this.group = new H.map.Group();
     // @ts-ignore
     this.group.addObjects(arrayOfHotels);
-    // @ts-ignore
+
     this.map.addObject(this.group);
+
+    this.map.addObject(locationMarker);
 
     this.group.addEventListener("tap", this.addInfoBubble);
 
