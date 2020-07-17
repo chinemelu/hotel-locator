@@ -4,7 +4,13 @@
     <a target="_blank" href="https://icons8.com/icons/set/3-star-hotel"
       >Hotel Star icon</a
     >
-    icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+    icon by <a target="_blank" href="https://icons8.com">Icons8</a> Icons made
+    by
+    <a href="https://www.flaticon.com/authors/turkkub" title="turkkub"
+      >turkkub</a
+    >
+    from
+    <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
   </div>
 </template>
 
@@ -31,10 +37,11 @@ import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png"
 
 @Component
 export default class BaseMap extends Vue {
-  // @ts-ignore
   private apiKey = process.env.VUE_APP_API_KEY;
-  // private group = {};
-  private map = {};
+  private map = {
+    addObject: (arg: object) => ({ arg }),
+    addObjects: (arg: []) => ({ arg })
+  };
   private ui = {};
   private group: EventTarget | any = {
     addEventListener: () => undefined,
@@ -192,8 +199,10 @@ export default class BaseMap extends Vue {
     this.group = new H.map.Group();
     // @ts-ignore
     this.group.addObjects(arrayOfHotels);
-    // @ts-ignore
+
     this.map.addObject(this.group);
+
+    this.map.addObject(locationMarker);
 
     this.group.addEventListener("tap", this.addInfoBubble);
 
