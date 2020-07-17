@@ -61,7 +61,7 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
     },
     title: "",
     vicinity: "",
-    href: '',
+    href: "",
     position: []
   };
 

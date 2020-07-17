@@ -29,7 +29,7 @@ import {
 
 import greyHomeIcon from "@/assets/grey-home-icon.svg";
 import blackHomeIcon from "@/assets/black-home-icon.svg";
-import locationMarker from "@/assets/location-marker.svg";
+import locationIcon from "@/assets/location-marker.png";
 import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png";
 
 /* eslint-disable no-undef */
@@ -53,7 +53,7 @@ export default class BaseMap extends Vue {
   // @ts-ignore: H is not defined
   private blackHomeIconInstance = new H.map.Icon(blackHomeIcon);
   // @ts-ignore: H is not defined
-  private locationMarkerInstance = new H.map.Icon(locationMarker);
+  private locationIconInstance = new H.map.Icon(locationIcon);
   // @ts-ignore: H is not defined
   private greyHomeIconInstance = new H.map.Icon(greyHomeIcon);
 
@@ -130,9 +130,11 @@ export default class BaseMap extends Vue {
     // @ts-ignore
     const arrayOfHotels = [];
     // @ts-ignore: H is not defined
+
+    // @ts-ignore: H is not defined
     const locationMarker = new H.map.Marker(
       { lat: this.lat, lng: this.long },
-      { icon: this.icon }
+      { icon: this.locationIconInstance }
     );
     // create map objects
     await Promise.all(
