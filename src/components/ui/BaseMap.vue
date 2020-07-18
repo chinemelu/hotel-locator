@@ -39,24 +39,29 @@ import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png"
 export default class BaseMap extends Vue {
   private apiKey = process.env.VUE_APP_API_KEY;
   private map = {
-    addObject: (arg: object) => ({ arg }),
-    addObjects: (arg: []) => ({ arg })
+    addObject: Function,
+    addObjects: Function
   };
-  private ui = {};
+  private ui = {
+    addBubble: Function
+  };
   private group: EventTarget | any = {
-    addEventListener: () => undefined,
-    dispatchEvent: () => false,
-    removeEventListener: () => undefined,
-    getBoundingBox: () => ""
+    addEventListener: Function,
+    dispatchEvent: Function,
+    removeEventListener: Function,
+    getBoundingBox: Function
   };
   private icon = "";
   private activeMarker: any = {};
+
   // @ts-ignore: H is not defined
   private blackHomeIconInstance = new H.map.Icon(blackHomeIcon);
   // @ts-ignore: H is not defined
   private locationIconInstance = new H.map.Icon(locationIcon);
   // @ts-ignore: H is not defined
   private greyHomeIconInstance = new H.map.Icon(greyHomeIcon);
+
+  private activeIcon = "";
 
   private platform: Platform = {
     createDefaultLayers: () => ({
@@ -155,12 +160,12 @@ export default class BaseMap extends Vue {
             : greyHomeIcon;
 
         // @ts-ignore: H is not defined
-        this.icon = new H.map.Icon(selectedIcon);
+        const icon = new H.map.Icon(selectedIcon);
 
         // @ts-ignore: H is not defined
         const marker = new H.map.Marker(
           { lat: hotelCoordinate[0], lng: hotelCoordinate[1] },
-          { icon: this.icon }
+          { icon }
         );
         marker.setData(`
             <div class="hotel-card-wrapper">
@@ -218,7 +223,7 @@ export default class BaseMap extends Vue {
     }
   }
 
-  public setSelectedIcon(evt: Event) {
+  public setTappedMarkerToBlackHomeIcon(evt: Event) {
     ensurePossiblyNullValueReturnsObject(evt.target).setIcon(
       this.blackHomeIconInstance
     );
@@ -228,17 +233,48 @@ export default class BaseMap extends Vue {
     this.activeMarker = ensurePossiblyNullValueReturnsObject(evt.target);
   }
 
+  public setPreviousIconWhenThereAreTwoOrMoreTapsOnMarkers() {
+    if (Object.keys(this.activeMarker).length > 0) {
+      this.activeMarker.setIcon(this.activeIcon);
+    }
+  }
+
+  public getCurrentIconAssociatedWithMarker(evt: Event) {
+    this.activeIcon = ensurePossiblyNullValueReturnsObject(
+      evt.target
+    ).getIcon();
+  }
+
+  public unselectBlackIconAndSetToOriginalIconWhenInfoBubbleCloses(evt: Event) {
+    if (
+      ensurePossiblyNullValueReturnsObject(evt.target).getState() ===
+      // @ts-ignore: H is not defined
+      H.ui.InfoBubble.State.CLOSED
+    ) {
+      this.activeMarker.setIcon(this.activeIcon);
+    }
+  }
+
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   public addInfoBubble(evt: Event) {
-    this.resetPreviousIconToDefaultGreyIcon();
-    this.setSelectedIcon(evt);
+    this.setPreviousIconWhenThereAreTwoOrMoreTapsOnMarkers();
+
+    this.getCurrentIconAssociatedWithMarker(evt);
+
+    this.setTappedMarkerToBlackHomeIcon(evt);
+
     // @ts-ignore: H is not defined
     const bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
       // read custom data
       content: ensurePossiblyNullValueReturnsObject(evt.target).getData()
     });
+
+    bubble.addEventListener(
+      "statechange",
+      this.unselectBlackIconAndSetToOriginalIconWhenInfoBubbleCloses
+    );
+
     this.clearOpenInformationBubble();
-    // @ts-ignore: H is not defined
     this.ui.addBubble(bubble);
     this.setActiveMarker(evt);
   }
@@ -251,6 +287,10 @@ export default class BaseMap extends Vue {
   public beforeDestroy() {
     window.removeEventListener("resize", this.onResize);
     window.removeEventListener("tap", this.addInfoBubble);
+    window.removeEventListener(
+      "statechange",
+      this.unselectBlackIconAndSetToOriginalIconWhenInfoBubbleCloses
+    );
   }
 }
 </script>
