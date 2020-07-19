@@ -100,7 +100,7 @@ export default class BaseMap extends Vue {
         lng: this.long
       }
     });
-
+    window.addEventListener("keydown", this.handleEscapeKeyPress);
     window.addEventListener("resize", this.onResize);
 
     // @ts-ignore: H is not defined
@@ -125,6 +125,15 @@ export default class BaseMap extends Vue {
   public onResize() {
     // @ts-ignore
     this.map.getViewPort().resize();
+  }
+
+  public handleEscapeKeyPress(evt: KeyboardEvent) {
+    const key = evt.keyCode || evt.key;
+    const isEscapeKey = key === 27;
+    if (isEscapeKey) {
+      this.clearOpenInformationBubble();
+      this.resetIconToOriginalState();
+    }
   }
 
   public replaceBreakHTMLTagsWithEmptySpace(str: string) {
@@ -239,6 +248,10 @@ export default class BaseMap extends Vue {
     }
   }
 
+  public resetIconToOriginalState() {
+    this.activeMarker.setIcon(this.activeIcon);
+  }
+
   public getCurrentIconAssociatedWithMarker(evt: Event) {
     this.activeIcon = ensurePossiblyNullValueReturnsObject(
       evt.target
@@ -251,7 +264,7 @@ export default class BaseMap extends Vue {
       // @ts-ignore: H is not defined
       H.ui.InfoBubble.State.CLOSED
     ) {
-      this.activeMarker.setIcon(this.activeIcon);
+      this.resetIconToOriginalState();
     }
   }
 
@@ -286,6 +299,7 @@ export default class BaseMap extends Vue {
 
   public beforeDestroy() {
     window.removeEventListener("resize", this.onResize);
+    window.removeEventListener("keydown", this.handleEscapeKeyPress);
     window.removeEventListener("tap", this.addInfoBubble);
     window.removeEventListener(
       "statechange",
