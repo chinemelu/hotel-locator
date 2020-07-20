@@ -38,6 +38,7 @@ import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png"
 @Component
 export default class BaseMap extends Vue {
   private apiKey = process.env.VUE_APP_API_KEY;
+  private activeBubbleElement = "";
   private map = {
     addObject: Function,
     addObjects: Function
@@ -102,6 +103,7 @@ export default class BaseMap extends Vue {
     });
     window.addEventListener("keydown", this.handleEscapeKeyPress);
     window.addEventListener("resize", this.onResize);
+    this.map.addEventListener("tap", this.addInfoBubble);
 
     // @ts-ignore: H is not defined
     new H.mapevents.Behavior(
@@ -128,7 +130,7 @@ export default class BaseMap extends Vue {
   }
 
   public handleEscapeKeyPress(evt: KeyboardEvent) {
-    const key = evt.keyCode || evt.key;
+    const key = evt.keyCode;
     const isEscapeKey = key === 27;
     if (isEscapeKey) {
       this.clearOpenInformationBubble();
@@ -218,18 +220,10 @@ export default class BaseMap extends Vue {
 
     this.map.addObject(locationMarker);
 
-    this.group.addEventListener("tap", this.addInfoBubble);
-
     // @ts-ignore
     this.map.getViewModel().setLookAtData({
       bounds: this.group.getBoundingBox()
     });
-  }
-
-  public resetPreviousIconToDefaultGreyIcon() {
-    if (Object.keys(this.activeMarker).length > 0) {
-      this.activeMarker.setIcon(this.greyHomeIconInstance);
-    }
   }
 
   public setTappedMarkerToBlackHomeIcon(evt: Event) {
@@ -242,8 +236,12 @@ export default class BaseMap extends Vue {
     this.activeMarker = ensurePossiblyNullValueReturnsObject(evt.target);
   }
 
+  public isFirstMarkerClick() {
+    return Object.keys(this.activeMarker).length === 0;
+  }
+
   public setPreviousIconWhenThereAreTwoOrMoreTapsOnMarkers() {
-    if (Object.keys(this.activeMarker).length > 0) {
+    if (!this.isFirstMarkerClick()) {
       this.activeMarker.setIcon(this.activeIcon);
     }
   }
@@ -268,8 +266,22 @@ export default class BaseMap extends Vue {
     }
   }
 
+  public isAnIconClicked(evt: Event) {
+    if (ensurePossiblyNullValueReturnsObject(evt.target).getData) return true;
+    return false;
+  }
+
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   public addInfoBubble(evt: Event) {
+    if (!this.isAnIconClicked(evt)) {
+      this.clearOpenInformationBubble();
+
+      if (!this.isFirstMarkerClick()) {
+        this.resetIconToOriginalState();
+      }
+      return;
+    }
+
     this.setPreviousIconWhenThereAreTwoOrMoreTapsOnMarkers();
 
     this.getCurrentIconAssociatedWithMarker(evt);
@@ -289,6 +301,7 @@ export default class BaseMap extends Vue {
 
     this.clearOpenInformationBubble();
     this.ui.addBubble(bubble);
+    this.activeBubbleElement = bubble.getElement();
     this.setActiveMarker(evt);
   }
 
