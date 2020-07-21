@@ -24,7 +24,8 @@ import axiosCalls from "../../services/AxiosCalls";
 import {
   Platform,
   HotelLocation,
-  ensurePossiblyNullValueReturnsObject
+  ensurePossiblyNullValueReturnsObject,
+  Map
 } from "@/types";
 
 import greyHomeIcon from "@/assets/grey-home-icon.svg";
@@ -39,9 +40,11 @@ import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png"
 export default class BaseMap extends Vue {
   private apiKey = process.env.VUE_APP_API_KEY;
   private activeBubbleElement = "";
-  private map = {
+  private event = "";
+  private map: Map = {
     addObject: Function,
-    addObjects: Function
+    addObjects: Function,
+    addEventListener: (this.event, () => ({}))
   };
   private ui = {
     addBubble: Function

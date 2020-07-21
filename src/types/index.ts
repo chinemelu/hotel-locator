@@ -55,6 +55,12 @@ export interface HotelLocation {
   vicinity: string;
 }
 
+export interface Map {
+  addObject: Function,
+  addObjects: Function,
+  addEventListener(evt: string, callback: Function): void
+}
+
 export const ensurePossiblyNullValueReturnsObject = <T>(
   argument: T | undefined | null
 ): any => {
