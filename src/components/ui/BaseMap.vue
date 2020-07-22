@@ -40,6 +40,7 @@ import iconForHotelWithAtLeastOneImage from "@/assets/hotel-with-image-icon.png"
 export default class BaseMap extends Vue {
   private apiKey = process.env.VUE_APP_API_KEY;
   private activeBubbleElement = "";
+  private locationMarker = {};
   private event = "";
   private map: Map = {
     addObject: Function,
@@ -152,7 +153,7 @@ export default class BaseMap extends Vue {
     // @ts-ignore: H is not defined
 
     // @ts-ignore: H is not defined
-    const locationMarker = new H.map.Marker(
+    this.locationMarker = new H.map.Marker(
       { lat: this.lat, lng: this.long },
       { icon: this.locationIconInstance }
     );
@@ -221,7 +222,7 @@ export default class BaseMap extends Vue {
 
     this.map.addObject(this.group);
 
-    this.map.addObject(locationMarker);
+    this.map.addObject(this.locationMarker);
 
     // @ts-ignore
     this.map.getViewModel().setLookAtData({
@@ -269,6 +270,10 @@ export default class BaseMap extends Vue {
     }
   }
 
+  public isLocationMarkerClicked(evt: Event) {
+    return evt.target === this.locationMarker;
+  }
+
   public isAnIconClicked(evt: Event) {
     if (ensurePossiblyNullValueReturnsObject(evt.target).getData) return true;
     return false;
@@ -276,6 +281,10 @@ export default class BaseMap extends Vue {
 
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   public addInfoBubble(evt: Event) {
+    if (this.isLocationMarkerClicked(evt)) {
+      return;
+    }
+
     if (!this.isAnIconClicked(evt)) {
       this.clearOpenInformationBubble();
 
