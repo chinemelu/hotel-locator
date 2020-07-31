@@ -25,6 +25,7 @@ import {
   Platform,
   HotelLocation,
   ensurePossiblyNullValueReturnsObject,
+  AdditionalHotelDetailsResponse,
   Map
 } from "@/types";
 
@@ -160,14 +161,16 @@ export default class BaseMap extends Vue {
     // create map objects
     await Promise.all(
       this.hotelLocations.map(async hotel => {
-        const additionalHotelDetailsResponse = await axiosCalls.get(hotel.href);
+        const additionalHotelDetailsResponse: AdditionalHotelDetailsResponse = await axiosCalls.get(
+          hotel.href
+        );
 
         const hotelCoordinate = hotel.position;
         const numberOfHotelImagesAvailable =
-          additionalHotelDetailsResponse.data.media.images.available;
+          additionalHotelDetailsResponse.response.data.media.images.available;
 
         const hotelImageArray =
-          additionalHotelDetailsResponse.data.media.images.items;
+          additionalHotelDetailsResponse.response.data.media.images.items;
 
         const selectedIcon =
           numberOfHotelImagesAvailable > 0

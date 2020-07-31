@@ -56,9 +56,42 @@ export interface HotelLocation {
 }
 
 export interface Map {
-  addObject: Function,
-  addObjects: Function,
-  addEventListener(evt: string, callback: Function): void
+  addObject: Function;
+  addObjects: Function;
+  addEventListener(evt: string, callback: Function): void;
+}
+
+export interface HotelLocationResponse {
+  success: boolean;
+  error?: Error;
+  response: Response;
+}
+
+export interface Error {
+  response: string;
+  request: string;
+  message: string;
+}
+
+export interface Response {
+  data: Data;
+}
+
+export interface Data {
+  results: Results;
+  items: Array<Items>;
+}
+
+export interface Results {
+  items: Array<HotelLocation>;
+}
+
+export interface Items {
+  position: Coordinates;
+}
+
+export interface AdditionalHotelDetailsResponse {
+  response: Response;
 }
 
 export const ensurePossiblyNullValueReturnsObject = <T>(
