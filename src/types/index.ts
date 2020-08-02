@@ -63,14 +63,8 @@ export interface Map {
 
 export interface HotelLocationResponse {
   success: boolean;
-  error?: Error;
-  response: Response;
-}
-
-export interface Error {
-  response: string;
-  request: string;
-  message: string;
+  response?: Response;
+  error?: string;
 }
 
 export interface Response {
@@ -78,7 +72,17 @@ export interface Response {
 }
 
 export interface Data {
+  media: Media;
   results: Results;
+  items: Array<Items>;
+}
+
+export interface Media {
+  images: Images;
+}
+
+export interface Images {
+  available: number;
   items: Array<Items>;
 }
 
@@ -88,6 +92,7 @@ export interface Results {
 
 export interface Items {
   position: Coordinates;
+  src: string;
 }
 
 export interface AdditionalHotelDetailsResponse {

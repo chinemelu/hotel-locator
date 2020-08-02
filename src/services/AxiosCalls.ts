@@ -6,7 +6,7 @@ const axiosInstance = axios.create();
 class AxiosCalls {
   async get(url: string) {
     try {
-    let response: null | object = null;
+    let response: any = null;
 
     setTimeout(() => {
       if (response === null) {
@@ -16,7 +16,7 @@ class AxiosCalls {
       response = await axiosInstance.get(url, { cancelToken: source.token });
       const responseObject = {
         success: true,
-        response: response
+        response
       }
       return responseObject;
     } catch (errorResponse) {

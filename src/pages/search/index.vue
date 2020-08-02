@@ -72,15 +72,17 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
     lat: 0
   };
 
-  public async searchLocation(location: string) {
+  public async searchLocation(location: string): Promise<void> {
     this.isLoading = true;
-    let hotelLocationResponse: HotelLocationResponse;
+    let hotelLocationResponse: Partial<HotelLocationResponse>;
+
     hotelLocationResponse = await axiosCalls.get(
       `https://geocode.search.hereapi.com/v1/geocode?q=${location}&apiKey=${process.env.VUE_APP_API_KEY}`
     );
     this.isLoading = false;
     if (
       hotelLocationResponse.success &&
+      hotelLocationResponse.response &&
       hotelLocationResponse.response.data.items.length > 0
     ) {
       this.coords = hotelLocationResponse.response.data.items[0].position;
@@ -89,7 +91,7 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
       hotelLocationResponse = await axiosCalls.get(
         `https://places.sit.ls.hereapi.com/places/v1/discover/explore?at=${this.coords.lat},${this.coords.lng}&cat=hotel&apiKey=${process.env.VUE_APP_API_KEY}`
       );
-      if (hotelLocationResponse.success) {
+      if (hotelLocationResponse.success && hotelLocationResponse.response) {
         this.hotelLocations = hotelLocationResponse.response.data.results.items;
         this.isLoading = false;
         this.handleNextSection();
@@ -99,6 +101,7 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
 
     if (
       hotelLocationResponse.success &&
+      hotelLocationResponse.response &&
       !hotelLocationResponse.response.data.items.length
     ) {
       this.$notify({
@@ -109,7 +112,6 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
     }
 
     if (!hotelLocationResponse.success) {
-      console.log(hotelLocationResponse);
       this.$notify({
         title: "Error",
         text: hotelLocationResponse.error,

@@ -5,7 +5,10 @@ NA
 NA
 
 #### How should this be manually tested?
-NA
+- clone the folder
+- cd into the folder
+- run `npm run install` and `npm run serve` respectively on the terminal
+- navigate to `/` on the browser
 
 #### Any background context you want to provide?
 NA
