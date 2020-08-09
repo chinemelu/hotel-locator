@@ -56,9 +56,43 @@ export interface HotelLocation {
 }
 
 export interface Map {
-  addObject: Function,
-  addObjects: Function,
-  addEventListener(evt: string, callback: Function): void
+  addObject: Function;
+  addObjects: Function;
+  addEventListener(evt: string, callback: Function): void;
+}
+
+export interface AxiosCallResponse {
+  success: boolean;
+  response?: Response;
+  error?: string;
+}
+
+export interface Response {
+  data: Data;
+}
+
+export interface Data {
+  media: Media;
+  results: Results;
+  items: Array<Items>;
+}
+
+export interface Media {
+  images: Images;
+}
+
+export interface Images {
+  available: number;
+  items: Array<Items>;
+}
+
+export interface Results {
+  items: Array<HotelLocation>;
+}
+
+export interface Items {
+  position: Coordinates;
+  src: string;
 }
 
 export const ensurePossiblyNullValueReturnsObject = <T>(

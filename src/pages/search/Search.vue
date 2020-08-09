@@ -22,7 +22,7 @@
             className="search-btn"
             :isLoading="isLoading"
             @button-clicked="handleButtonClick"
-            :disabled="!location"
+            :disabled="conditionsForSearchButtonToBeDisabled"
           />
         </div>
       </div>
@@ -41,10 +41,18 @@ import BaseMap from "@/components/ui/BaseMap.vue";
   }
 })
 export default class Search extends Vue {
-  @Prop() readonly isLoading!: boolean;
+  @Prop({ default: false }) readonly isLoading!: boolean;
+
   private location = "";
+
   public handleButtonClick() {
     this.$emit("search-button-clicked", this.location);
+  }
+
+  get conditionsForSearchButtonToBeDisabled() {
+    const conditionsForSearchButtonToBeDisabled =
+      !this.location || this.isLoading;
+    return conditionsForSearchButtonToBeDisabled;
   }
 }
 </script>

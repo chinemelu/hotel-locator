@@ -1,20 +1,39 @@
 import axios from "axios";
 
+const source = axios.CancelToken.source();
 const axiosInstance = axios.create();
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 
 class AxiosCalls {
   async get(url: string) {
     try {
-      const response = await axiosInstance.get(url);
-      return response;
-    } catch (error) {
-      if (error.response) {
-        return error.response;
-      } else if (error.request) {
-        return error.request;
+      let response: any = null;
+
+      setTimeout(() => {
+        if (response === null) {
+          source.cancel("Timeout");
+        }
+      }, 10000);
+      response = await axiosInstance.get(url, { cancelToken: source.token });
+      const responseObject = {
+        success: true,
+        response
+      };
+      return responseObject;
+    } catch (errorResponse) {
+      let error = "";
+      if (errorResponse.response as string) {
+        error = errorResponse.response;
+      } else if (errorResponse.request as string) {
+        error = errorResponse.request;
       } else {
-        return error.message;
+        error = errorResponse.message as string;
       }
+      const errorObject = {
+        success: false,
+        error
+      };
+      return errorObject;
     }
   }
 }
