@@ -61,7 +61,7 @@ export interface Map {
   addEventListener(evt: string, callback: Function): void;
 }
 
-export interface HotelLocationResponse {
+export interface AxiosCallResponse {
   success: boolean;
   response?: Response;
   error?: string;
@@ -93,10 +93,6 @@ export interface Results {
 export interface Items {
   position: Coordinates;
   src: string;
-}
-
-export interface AdditionalHotelDetailsResponse {
-  response: Response;
 }
 
 export const ensurePossiblyNullValueReturnsObject = <T>(

@@ -25,8 +25,9 @@ import {
   Platform,
   HotelLocation,
   ensurePossiblyNullValueReturnsObject,
-  AdditionalHotelDetailsResponse,
-  Map
+  AxiosCallResponse,
+  Map,
+  Items
 } from "@/types";
 
 import greyHomeIcon from "@/assets/grey-home-icon.svg";
@@ -161,31 +162,42 @@ export default class BaseMap extends Vue {
     // create map objects
     await Promise.all(
       this.hotelLocations.map(async hotel => {
-        const additionalHotelDetailsResponse: AdditionalHotelDetailsResponse = await axiosCalls.get(
+        const additionalHotelDetailsResponse: AxiosCallResponse = await axiosCalls.get(
           hotel.href
         );
 
-        const hotelCoordinate = hotel.position;
-        const numberOfHotelImagesAvailable =
-          additionalHotelDetailsResponse.response.data.media.images.available;
+        if (
+          additionalHotelDetailsResponse.success &&
+          additionalHotelDetailsResponse.response
+        ) {
+          const hotelCoordinate = hotel.position;
+          const numberOfHotelImagesAvailable =
+            additionalHotelDetailsResponse.response.data.media.images.available;
 
-        const hotelImageArray =
-          additionalHotelDetailsResponse.response.data.media.images.items;
+          let hotelImageArray: Array<Items> = [];
+          if (
+            additionalHotelDetailsResponse.response &&
+            additionalHotelDetailsResponse.success &&
+            additionalHotelDetailsResponse.response.data.media.images.items
+          ) {
+            hotelImageArray =
+              additionalHotelDetailsResponse.response.data.media.images.items;
+          }
 
-        const selectedIcon =
-          numberOfHotelImagesAvailable > 0
-            ? iconForHotelWithAtLeastOneImage
-            : greyHomeIcon;
+          const selectedIcon =
+            numberOfHotelImagesAvailable > 0
+              ? iconForHotelWithAtLeastOneImage
+              : greyHomeIcon;
 
-        // @ts-ignore: H is not defined
-        const icon = new H.map.Icon(selectedIcon);
+          // @ts-ignore: H is not defined
+          const icon = new H.map.Icon(selectedIcon);
 
-        // @ts-ignore: H is not defined
-        const marker = new H.map.Marker(
-          { lat: hotelCoordinate[0], lng: hotelCoordinate[1] },
-          { icon }
-        );
-        marker.setData(`
+          // @ts-ignore: H is not defined
+          const marker = new H.map.Marker(
+            { lat: hotelCoordinate[0], lng: hotelCoordinate[1] },
+            { icon }
+          );
+          marker.setData(`
             <div class="hotel-card-wrapper">
                 <div class="hotel-card">
                   <div class="hotel-image-wrapper">
@@ -200,8 +212,8 @@ export default class BaseMap extends Vue {
                       <h4 class="hotel-name">${
                         hotel.title
                       }, ${this.replaceBreakHTMLTagsWithEmptySpace(
-          hotel.vicinity
-        )}</h4>
+            hotel.vicinity
+          )}</h4>
                       <p class="hotel-distance">${
                         hotel.distance
                       } km from location</p>
@@ -214,8 +226,15 @@ export default class BaseMap extends Vue {
                 </div>
                 <button class="book-hotel-btn">Book</button>
             </div>`);
-        marker.dispatchEvent("tap");
-        arrayOfHotels.push(marker);
+          marker.dispatchEvent("tap");
+          arrayOfHotels.push(marker);
+        } else {
+          this.$notify({
+            title: "Error",
+            text: "Error fetching images",
+            type: "error"
+          });
+        }
       })
     );
     // @ts-ignore: H is not defined

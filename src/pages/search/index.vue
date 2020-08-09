@@ -17,7 +17,7 @@ import Search from "@/pages/search/Search.vue";
 import SearchResults from "@/pages/search/SearchResults.vue";
 import NavbarLayout from "@/components/layout/NavbarLayout.vue";
 
-import { HotelLocation, Coordinates, HotelLocationResponse } from "@/types";
+import { HotelLocation, Coordinates, AxiosCallResponse } from "@/types";
 
 import DynamicComponentMixin from "@/mixins/dynamicComponents";
 
@@ -74,7 +74,7 @@ export default class SearchIndex extends Mixins(DynamicComponentMixin) {
 
   public async searchLocation(location: string): Promise<void> {
     this.isLoading = true;
-    let hotelLocationResponse: Partial<HotelLocationResponse>;
+    let hotelLocationResponse: Partial<AxiosCallResponse>;
 
     hotelLocationResponse = await axiosCalls.get(
       `https://geocode.search.hereapi.com/v1/geocode?q=${location}&apiKey=${process.env.VUE_APP_API_KEY}`
