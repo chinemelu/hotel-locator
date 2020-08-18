@@ -2,7 +2,7 @@
   <div id="app">
     <notifications position="top center" />
     <div
-      ref="internetStatus"
+      v-if="internetStatusShouldShow"
       :class="[hasInternetConnection ? 'online' : 'offline', 'internet-status']"
     >
       {{ internetStatusText }}
@@ -17,10 +17,17 @@ import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class App extends Vue {
   private hasInternetConnection = navigator.onLine;
+  private internetStatusShouldShow = false;
   private internetStatusText = navigator.onLine ? "Online" : "Offline";
 
   public updateInternetConnectionStatus() {
     this.hasInternetConnection = navigator.onLine;
+    if (this.hasInternetConnection) {
+      this.internetStatusShouldShow = true;
+      setTimeout(() => (this.internetStatusShouldShow = false), 5000);
+    } else {
+      this.internetStatusShouldShow = true;
+    }
     this.internetStatusText = this.hasInternetConnection ? "Online" : "Offline";
   }
 
@@ -49,14 +56,15 @@ export default class App extends Vue {
   padding: 0.2rem 1.5rem;
   width: 90%;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   border-radius: 4px;
-  top: 5%;
+  top: 20%;
   left: 50%;
   color: #fff;
   transform: translate(-50%, -50%);
   box-shadow: 0px 1px 15px rgba(63, 63, 68, 0.15);
   position: absolute;
+  z-index: 2;
 }
 
 .internet-status.online {
