@@ -224,7 +224,7 @@ export default class BaseMap extends Vue {
                     </div>
                   </div>
                 </div>
-                <button class="book-hotel-btn">Book</button>
+                <button class="book-hotel-btn">Show Details</button>
             </div>`);
           marker.dispatchEvent("tap");
           arrayOfHotels.push(marker);
