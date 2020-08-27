@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 
 import hotelPlaceholder from "@/assets/hotel-placeholder.png";
 
@@ -69,6 +69,8 @@ export default class BaseMap extends Vue {
   private greyHomeIconInstance = new H.map.Icon(greyHomeIcon);
 
   private activeIcon = "";
+
+  private showHotelDetailsModal = false;
 
   private platform: Platform = {
     createDefaultLayers: () => ({
@@ -301,6 +303,11 @@ export default class BaseMap extends Vue {
     return false;
   }
 
+  @Watch("showHotelDetailsModal")
+  showDetailsHaveChanged(newValue: boolean) {
+    this.showHotelDetailsModal = newValue;
+  }
+
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   public addInfoBubble(evt: Event) {
     if (this.isLocationMarkerClicked(evt)) {
@@ -335,6 +342,14 @@ export default class BaseMap extends Vue {
 
     this.clearOpenInformationBubble();
     this.ui.addBubble(bubble);
+    bubble.getElement().addEventListener("click", (event: Event) => {
+      if (
+        event.target &&
+        (event.target as HTMLElement).className === "book-hotel-btn"
+      ) {
+        this.showHotelDetailsModal = true;
+      }
+    });
     this.activeBubbleElement = bubble.getElement();
     this.setActiveMarker(evt);
   }
@@ -390,6 +405,10 @@ export default class BaseMap extends Vue {
   margin-top: 0.5rem;
   font-size: 0.6rem;
   color: #b3b7bb;
+}
+
+.mad-o {
+  background-color: red;
 }
 
 .hotel-price {
